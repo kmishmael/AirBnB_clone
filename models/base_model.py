@@ -10,7 +10,6 @@ class BaseModel:
     """
     Representation of Base class. It defines  all common attributes and methods for other classes
     """
-
     def __init__(self, *args, **kwargs):
         """Initialize instance
         """

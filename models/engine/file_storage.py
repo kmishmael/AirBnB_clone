@@ -57,4 +57,5 @@ class FileStorage:
                     self.new(obj)
         except FileNotFoundError:
             pass
+
     
