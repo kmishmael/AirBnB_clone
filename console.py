@@ -15,22 +15,25 @@ class HBNBCommand(cmd.Cmd):
         Quit command to exit the program
         """
         return True
+
     def do_EOF(self, arg):
         """
         Exit the program with Ctrl+D (EOF)
         """
-        print()
         return True
+
     def emptyline(self):
         """
         Do nothing when an empty line is entered
         """
         pass
+
     def help_quit(self):
         """
         Display help for the quit command
         """
         print("Quit command to exit the program")
+
     def do_create(self, arg):
         """
         Create a new instance of BaseModel, save it, and print the id
@@ -44,6 +47,7 @@ class HBNBCommand(cmd.Cmd):
             new_instance = models.classes[args[0]]()
             new_instance.save()
             print(new_instance.id)
+            
     def do_show(self, arg):
         """
         Print the string representation of an instance
@@ -62,6 +66,7 @@ class HBNBCommand(cmd.Cmd):
                 print(instances[key])
             else:
                 print("** no instance found **")
+
     def do_destroy(self, arg):
         """
         Delete an instance based on class name and id
@@ -81,6 +86,8 @@ class HBNBCommand(cmd.Cmd):
                 models.storage.save()
             else:
                 print("** no instance found **")
+
+
     def do_all(self, arg):
         """
         Print all instances of a class or all instances in general
@@ -94,6 +101,8 @@ class HBNBCommand(cmd.Cmd):
         else:
             class_instances = [str(value) for key, value in instances.items() if args[0] in key]
             print(class_instances)
+
+
     def do_update(self, arg):
         """
         Update an instance based on class name and id
@@ -121,5 +130,7 @@ class HBNBCommand(cmd.Cmd):
                     instance.save()
             else:
                 print("** no instance found **")
+
+
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
