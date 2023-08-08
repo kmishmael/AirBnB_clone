@@ -6,7 +6,17 @@ class TestBaseModel(unittest.TestCase):
     """Test cases for the BaseModel class
     """
 
+    def test_docstrings(self):
+        """Test that docstrings are defined
+        """
+        self.assertIsNotNone(BaseModel.__doc__)
+        self.assertIsNotNone(BaseModel.__str__.__doc__)
+        self.assertIsNotNone(BaseModel.save.__doc__)
+        self.assertIsNotNone(BaseModel.to_dict.__doc__)
+
     def test_valid_uuid_string(self):
+        """Test if uuid is a string
+        """
         model = BaseModel()
         self.assertTrue(isinstance(model.id, str))
         self.assertEqual(len(model.id), 36)
