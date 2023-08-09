@@ -1,9 +1,11 @@
 #!/usr/bin/python3
 
 import unittest
+from uuid import uuid4
 from models.base_model import BaseModel
 from datetime import datetime
 import time
+from models import storage
 
 class TestBaseModel(unittest.TestCase):
     """Test cases for the BaseModel class
@@ -66,7 +68,7 @@ class TestBaseModel(unittest.TestCase):
         model2 = BaseModel()
         self.assertLess(model1.updated_at, model2.updated_at)
         
-    def test_str_representation(self):
+    def test_str_repr(self):
         """Test that the str representation is correct
         """
         model = BaseModel()
@@ -74,6 +76,12 @@ class TestBaseModel(unittest.TestCase):
         self.assertIn(model.id, str(model))
         self.assertIn(str(model.__dict__), str(model))
         self.assertEqual(f"[{model.__class__.__name__}] ({model.id}) {model.__dict__}]", str(model))
+    
+    def test_new_instance_in_file_object(self):
+        model = BaseModel()
+        self.assertIn("{}.{}".format(model.__class__.__name__, model.id), storage.all().keys())
+        self.assertIn(model, storage.all().values())
+
 
     def test_save_updates_updated_at(self):
         """Test if saving updates updated_at
@@ -96,6 +104,15 @@ class TestBaseModel(unittest.TestCase):
         obj_dict = model.to_dict()
         for key in expected_keys:
             self.assertIn(key, obj_dict)
+    
+    def test_with_kwargs(self):
+        now = datetime.now()
+        temp_id = str(uuid4())
+        model = BaseModel(id=temp_id, created_at=now.isoformat(), updated_at=now.isoformat())
+        self.assertEqual(model.id, temp_id)
+        self.assertEqual(model.created_at, now)
+        self.assertEqual(model.updated_at, now)
+        
 
 if __name__ == '__main__':
     unittest.main()
