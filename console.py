@@ -33,6 +33,17 @@ class HBNBCommand(cmd.Cmd):
                 #print([str(value) for value in instances.values()])
             else:
                 print("** class doesn't exist **")
+        elif len(sections) == 2 and sections[1].startswith('show(') and sections[1].endswith(')'):
+            class_name = sections[0]
+            id = str(sections[1][6:-2])
+
+            if class_name in valid_models.keys():
+                instances = storage.all()
+                key = class_name + "." + id
+                if key in instances.keys():
+                    print(instances[key])
+                else:
+                    print("** no instance found **")
         else:
             print("*** Unknown syntax: {}".format(line))
 
