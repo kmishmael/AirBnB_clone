@@ -11,6 +11,31 @@ class HBNBCommand(cmd.Cmd):
     """
     prompt = '(hbnb) '
 
+    def default(self, line):
+        """Override the default method to handle <class name>.all() format.
+        """
+        sections = line.split(".")
+        if len(sections) == 2 and sections[1] == 'all()':
+            class_name = sections[0]
+            if class_name in valid_models.keys():
+               # instances = [i for i in storage.all()]
+                command = "{}".format(class_name)
+                self.do_all(command)
+                #print([str(value) for value in instances.values()])
+            else:
+                print("** class doesn't exist **")
+        elif len(sections) == 2 and sections[1] == 'count()':
+            class_name = sections[0]
+            if class_name in valid_models.keys():
+               # instances = [i for i in storage.all()]
+                command = "{}".format(class_name)
+                self.do_count(command)
+                #print([str(value) for value in instances.values()])
+            else:
+                print("** class doesn't exist **")
+        else:
+            print("*** Unknown syntax: {}".format(line))
+
     def do_quit(self, arg):
         """Usage: quit
 
@@ -127,6 +152,22 @@ class HBNBCommand(cmd.Cmd):
                                if args[0] in key]
             print(class_instances)
 
+    def do_count(self, arg):
+        """Usage: all
+
+        Print all instances of a class or all instances in general
+        """
+        args = arg.split()
+        instances = storage.all()
+        if len(args) == 0:
+            print(len([str(value) for value in instances.values()]))
+        elif args[0] not in list(valid_models.keys()):
+            print("** class doesn't exist **")
+        else:
+            class_instances_count = len([str(value) for key, value in instances.items()
+                               if args[0] in key])
+            print(class_instances_count)
+
     def do_update(self, arg):
         """Usage: update <model.id>
 
@@ -155,7 +196,6 @@ class HBNBCommand(cmd.Cmd):
                     instance.save()
             else:
                 print("** no instance found **")
-
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
