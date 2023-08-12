@@ -10,6 +10,7 @@ from time import sleep
 from datetime import datetime
 from models import storage
 
+
 class TestPlaceModel(unittest.TestCase):
     """Unit Tests for Place Model"""
 
@@ -79,7 +80,8 @@ class TestPlaceModel(unittest.TestCase):
 
     def test_new_instance_in_file_object(self):
         place = Place()
-        self.assertIn("{}.{}".format(place.__class__.__name__, place.id), storage.all().keys())
+        self.assertIn("{}.{}".format(place.__class__.__name__, place.id),
+                      storage.all().keys())
         self.assertIn(place, storage.all().values())
 
     def test_place_unique_uuid(self):
@@ -102,11 +104,12 @@ class TestPlaceModel(unittest.TestCase):
     def test_with_kwargs(self):
         now = datetime.now()
         temp_id = str(uuid4())
-        model = Place(id=temp_id, created_at=now.isoformat(), updated_at=now.isoformat())
+        model = Place(id=temp_id, created_at=now.isoformat(),
+                      updated_at=now.isoformat())
         self.assertEqual(model.id, temp_id)
         self.assertEqual(model.created_at, now)
         self.assertEqual(model.updated_at, now)
-        
+
 
 if __name__ == "__main__":
     unittest.main()

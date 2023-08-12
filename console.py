@@ -83,7 +83,7 @@ class HBNBCommand(cmd.Cmd):
             args = [arg.strip() for arg in sections[1][7:-1].split(', ')]
             if len(args) >= 2:
                 class_name = sections[0]
-                id_part = args[0][1:-1] 
+                id_part = args[0][1:-1]
                 if class_name in valid_models:
                     instances = storage.all()
                     key = class_name + "." + id_part

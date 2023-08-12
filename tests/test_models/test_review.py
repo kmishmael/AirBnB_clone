@@ -10,6 +10,7 @@ from time import sleep
 from datetime import datetime
 from models import storage
 
+
 class TestReviewModel(unittest.TestCase):
     """Unit Tests for Review Model"""
 
@@ -47,7 +48,8 @@ class TestReviewModel(unittest.TestCase):
 
     def test_new_instance_in_file_object(self):
         review = Review()
-        self.assertIn("{}.{}".format(review.__class__.__name__, review.id), storage.all().keys())
+        self.assertIn("{}.{}".format(review.__class__.__name__, review.id),
+                      storage.all().keys())
         self.assertIn(review, storage.all().values())
 
     def test_review_unique_uuid(self):
@@ -70,10 +72,12 @@ class TestReviewModel(unittest.TestCase):
     def test_with_kwargs(self):
         now = datetime.now()
         temp_id = str(uuid4())
-        model = Review(id=temp_id, created_at=now.isoformat(), updated_at=now.isoformat())
+        model = Review(id=temp_id, created_at=now.isoformat(),
+                       updated_at=now.isoformat())
         self.assertEqual(model.id, temp_id)
         self.assertEqual(model.created_at, now)
         self.assertEqual(model.updated_at, now)
-        
+
+
 if __name__ == "__main__":
     unittest.main()

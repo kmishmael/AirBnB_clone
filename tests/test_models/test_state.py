@@ -10,6 +10,7 @@ from time import sleep
 from datetime import datetime
 from models import storage
 
+
 class TestStateModel(unittest.TestCase):
     """Unit Tests for State Model"""
 
@@ -20,7 +21,7 @@ class TestStateModel(unittest.TestCase):
     def test_no_args(self):
         state = State(None)
         self.assertNotIn(None, state.__dict__.values())
-    
+
     def test_id_is_public_str(self):
         state = State()
         self.assertEqual(str, type(state.id))
@@ -39,7 +40,8 @@ class TestStateModel(unittest.TestCase):
 
     def test_new_instance_in_file_object(self):
         state = State()
-        self.assertIn("{}.{}".format(state.__class__.__name__, state.id), storage.all().keys())
+        self.assertIn("{}.{}".format(state.__class__.__name__, state.id),
+                      storage.all().keys())
         self.assertIn(state, storage.all().values())
 
     def test_state_unique_uuid(self):
@@ -62,11 +64,12 @@ class TestStateModel(unittest.TestCase):
     def test_with_kwargs(self):
         now = datetime.now()
         temp_id = str(uuid4())
-        model = State(id=temp_id, created_at=now.isoformat(), updated_at=now.isoformat())
+        model = State(id=temp_id, created_at=now.isoformat(),
+                      updated_at=now.isoformat())
         self.assertEqual(model.id, temp_id)
         self.assertEqual(model.created_at, now)
         self.assertEqual(model.updated_at, now)
-        
+
 
 if __name__ == "__main__":
     unittest.main()

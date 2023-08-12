@@ -8,12 +8,13 @@ import models
 
 class BaseModel:
     """
-    Representation of Base class. It defines  all common attributes and methods for other classes
+    Representation of Base class. It defines  all common attributes
+    and methods for other classes
     """
     def __init__(self, *args, **kwargs):
         """Initialize instance
         """
-        if kwargs != None and len(kwargs) > 0:
+        if kwargs is not None and len(kwargs) > 0:
             for key, value in kwargs.items():
                 if key == '__class__':
                     continue
@@ -31,14 +32,14 @@ class BaseModel:
         """Return the string format
         """
         return f"[{self.__class__.__name__}] ({self.id}) {self.__dict__}]"
-    
+
     def save(self):
         """updates the public instance attribute updated_at with
         the current datetime
         """
         self.updated_at = datetime.now()
         models.storage.save()
-    
+
     def to_dict(self):
         """Return dict represantation of this object
         """

@@ -10,6 +10,7 @@ from time import sleep
 from datetime import datetime
 from models import storage
 
+
 class TestCityModel(unittest.TestCase):
     """Unit Tests for City Model"""
 
@@ -20,7 +21,7 @@ class TestCityModel(unittest.TestCase):
     def test_no_args(self):
         city = City(None)
         self.assertNotIn(None, city.__dict__.values())
- 
+
     def test_id_is_public_str(self):
         city = City()
         self.assertEqual(str, type(city.id))
@@ -43,7 +44,8 @@ class TestCityModel(unittest.TestCase):
 
     def test_new_instance_in_file_object(self):
         city = City()
-        self.assertIn("{}.{}".format(city.__class__.__name__, city.id), storage.all().keys())
+        self.assertIn("{}.{}".format(city.__class__.__name__, city.id),
+                      storage.all().keys())
         self.assertIn(city, storage.all().values())
 
     def test_city_unique_uuid(self):
@@ -62,15 +64,16 @@ class TestCityModel(unittest.TestCase):
         sleep(0.1)
         city2 = City()
         self.assertNotEqual(city1.updated_at, city2.updated_at)
-    
+
     def test_with_kwargs(self):
         now = datetime.now()
         temp_id = str(uuid4())
-        model = City(id=temp_id, created_at=now.isoformat(), updated_at=now.isoformat())
+        model = City(id=temp_id, created_at=now.isoformat(),
+                     updated_at=now.isoformat())
         self.assertEqual(model.id, temp_id)
         self.assertEqual(model.created_at, now)
         self.assertEqual(model.updated_at, now)
-        
+
 
 if __name__ == "__main__":
     unittest.main()

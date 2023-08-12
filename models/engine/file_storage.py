@@ -11,11 +11,13 @@ from models.place import Place
 from models.review import Review
 from models.state import State
 
+
 class FileStorage:
     """Representation of file storage
     """
     __file_path = 'file.json'
     __objects = {}
+
     def __init__(self):
         """Instance initialization
         """
@@ -24,12 +26,12 @@ class FileStorage:
     def all(self):
         """
         get dict object
-        
+
         Returns:
             objects {__objects}
         """
         return FileStorage.__objects
-    
+
     def new(self, obj):
         """
         sets in `__objects` object with key `<obj class name>.id`
@@ -38,7 +40,7 @@ class FileStorage:
         """
         key = "{}.{}".format(obj.__class__.__name__, obj.id)
         FileStorage.__objects[key] = obj
-    
+
     def save(self):
         """
         Serialize `objects` to the JSON file
@@ -51,7 +53,8 @@ class FileStorage:
 
     def reload(self):
         """
-        Deserializes the JSON file to `objects` if it exists, else FileNotFoundError
+        Deserializes the JSON file to `objects` if it exists,
+        else FileNotFoundError
         """
         try:
             with open(FileStorage.__file_path, "r") as file:
@@ -63,5 +66,3 @@ class FileStorage:
                     self.new(obj)
         except FileNotFoundError:
             pass
-
-    

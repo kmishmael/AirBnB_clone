@@ -10,7 +10,7 @@ from models.review import Review
 from models.state import State
 from models.engine.file_storage import FileStorage
 
-storage  = FileStorage()
+storage = FileStorage()
 
 storage.reload()
 

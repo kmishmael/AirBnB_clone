@@ -4,10 +4,11 @@
 
 from models.base_model import BaseModel
 
+
 class Place(BaseModel):
     """
     Place class that inherits from BaseModel.
-    
+
     Public class attributes:
         city_id {string} - empty string
         user_id {string} - empty string
