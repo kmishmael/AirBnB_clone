@@ -6,6 +6,30 @@ import cmd
 from models import storage, valid_models
 
 
+def is_function(suspect, name):
+    """checks if `suspect` is a partial of function
+
+    Args:
+        suspect : string - the string suspected to be part of a function
+        name : string - the name of the function
+    """
+    if suspect.startswith(f'{name}(') and suspect.endswith(')'):
+        return True
+    return False
+
+
+def num_of_args(arg_string) -> int:
+    """calculates the number of args in a string
+
+    Args:
+        arg_string - the function args string
+
+    Returns:
+        The number of args
+    """
+    return len(arg_string.split(", "))
+
+
 class HBNBCommand(cmd.Cmd):
     """HBNB Console Definition
     """
@@ -28,8 +52,8 @@ class HBNBCommand(cmd.Cmd):
                 command = "{}".format(class_name)
                 self.do_count(command)
             else:
-                print("** class doesn't exis         t **")
-        elif sections[1].startswith('show(') and sections[1].endswith(')'):
+                print("** class doesn't exist **")
+        elif len(sections) == 2 and is_function(sections[1], 'show'):
             class_name = sections[0]
             id = str(sections[1][6:-2])
 
@@ -42,7 +66,7 @@ class HBNBCommand(cmd.Cmd):
                     print("** no instance found **")
             else:
                 print("** class doesn't exist **")
-        elif sections[1].startswith('destroy(') and sections[1].endswith(')'):
+        elif len(sections) == 2 and is_function(sections[1], 'destroy'):
             class_name = sections[0]
             id = str(sections[1][5:-1]).strip()
 
@@ -57,7 +81,9 @@ class HBNBCommand(cmd.Cmd):
             else:
                 print("** class doesn't exist **")
 
-        elif sections[1].startswith('update(') and sections[1].endswith(')'):
+        elif (len(sections) == 2 and
+              is_function(sections[1], 'update') and
+              num_of_args(sections[7:-1]) == 3):
             print('update function')
             args = [arg.strip() for arg in sections[1][7:-1].split(', ')]
             if len(args) >= 3:
@@ -79,7 +105,8 @@ class HBNBCommand(cmd.Cmd):
             else:
                 print("** not enough arguments **")
 
-        elif sections[1].startswith('update(') and sections[1].endswith(')'):
+        elif (len(sections) == 2 and is_function(sections[1], 'update')
+              and num_of_args(sections[7:-1]) == 2):
             args = [arg.strip() for arg in sections[1][7:-1].split(', ')]
             if len(args) >= 2:
                 class_name = sections[0]
@@ -199,6 +226,31 @@ class HBNBCommand(cmd.Cmd):
             class_instances = [str(value) for key, value in instances.items()
                                if args[0] in key]
             print(class_instances)
+
+    def do_destroy(self, arg):
+        """Usage: destroy <class.id>
+
+        Delete an instance based on class name and id
+
+        Args:
+            arg {string} - unparsed string which is unique instance to be
+            deleted
+        """
+        args = arg.split()
+        if len(args) == 0:
+            print("** class name missing **")
+        elif args[0] not in list(valid_models.keys()):
+            print("** class doesn't exist **")
+        elif len(args) < 2:
+            print("** instance id missing **")
+        else:
+            key = args[0] + "." + args[1]
+            live_instances = storage.all()
+            if key in live_instances:
+                live_instances.pop(key)
+                storage.save()
+            else:
+                print("** no instance found **")
 
     def do_count(self, arg):
         """Usage: all
