@@ -32,7 +32,6 @@ class FileStorage:
         """
         return FileStorage.__objects
 
-
     def new(self, obj):
         """
         sets in `__objects` object with key `<obj class name>.id`
@@ -41,7 +40,6 @@ class FileStorage:
         """
         key = "{}.{}".format(obj.__class__.__name__, obj.id)
         FileStorage.__objects[key] = obj
-
 
     def save(self):
         """
@@ -52,7 +50,6 @@ class FileStorage:
             obj_dict[key] = obj.to_dict()
         with open(FileStorage.__file_path, "w") as file:
             json.dump(obj_dict, file)
-
 
     def reload(self):
         """
