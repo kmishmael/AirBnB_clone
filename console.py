@@ -109,9 +109,9 @@ class HBNBCommand(cmd.Cmd):
                                 setattr(instance, key, value)
                                 instance.save()
                         else:
-                            print("** no instance found **")
+                            print("** invalid dictionary representation **")
                     else:
-                        print("** invalid dictionary representation **")
+                        print("** no instance found **")
                 else:
                     print("** class doesn't exist **")
             elif len(args) >= 3:
