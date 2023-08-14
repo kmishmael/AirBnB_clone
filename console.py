@@ -68,13 +68,13 @@ class HBNBCommand(cmd.Cmd):
                 print("** class doesn't exist **")
         elif len(sections) == 2 and is_function(sections[1], 'destroy'):
             class_name = sections[0]
-            id = str(sections[1][5:-1]).strip()
+            id = sections[1][9:-2]
 
-            if class_name in valid_models.keys():
-                instances = storage.all()
+            if class_name in list(valid_models.keys()):
                 key = class_name + "." + id
-                if key in instances:
-                    instances.pop(key)
+                live_instances = storage.all()
+                if key in live_instances:
+                    live_instances.pop(key)
                     storage.save()
                 else:
                     print("** no instance found **")
@@ -84,7 +84,6 @@ class HBNBCommand(cmd.Cmd):
         elif (len(sections) == 2 and
               is_function(sections[1], 'update') and
               num_of_args(sections[7:-1]) == 3):
-            print('update function')
             args = [arg.strip() for arg in sections[1][7:-1].split(', ')]
             if len(args) >= 3:
                 class_name = sections[0]
