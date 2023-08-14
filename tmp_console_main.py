@@ -104,14 +104,12 @@ class HBNBCommand(cmd.Cmd):
                         except (NameError, SyntaxError):
                             print("** invalid dictionary representation **")
                             return
-                        if type(dict_obj) == dict:
-                            for key, value in dict_obj.items():
-                                setattr(instance, key, value)
-                                instance.save()
-                        else:
-                            print("** no instance found **")
+
+                        for key, value in dict_obj.items():
+                            setattr(instance, key, value)
+                            instance.save()
                     else:
-                        print("** invalid dictionary representation **")
+                        print("** no instance found **")
                 else:
                     print("** class doesn't exist **")
             elif len(args) >= 3:
