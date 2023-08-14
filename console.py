@@ -4,6 +4,7 @@
 
 import cmd
 from models import storage, valid_models
+import re
 
 
 def is_function(suspect, name):
@@ -82,18 +83,46 @@ class HBNBCommand(cmd.Cmd):
                 print("** class doesn't exist **")
 
         elif (len(sections) == 2 and
-              is_function(sections[1], 'update') and
-              num_of_args(sections[7:-1]) == 3):
-            args = [arg.strip() for arg in sections[1][7:-1].split(', ')]
-            if len(args) >= 3:
-                class_name = sections[0]
-                id_part = args[0][1:-1]
-                if class_name in valid_models:
-                    instances = storage.all()
+              is_function(sections[1], 'update')):
+            args = [arg.strip().replace('"', '')
+                    for arg in sections[1][7:-1].split(', ')]
+            class_name = sections[0]
+            id_part = args[0]
+            id = sections[1][7:-1].split(', ')[0].strip()
+
+            pattern = r"\{.*\}"
+            match = re.search(pattern, sections[1])
+            if match:
+                sus = match.group(0)
+                if class_name in list(valid_models.keys()):
+                    live_instances = storage.all()
                     key = class_name + "." + id_part
-                    if key in instances:
-                        instance = instances[key]
-                        attr_name = args[1][1:-1]
+                    if key in live_instances:
+                        instance = live_instances[key]
+                        try:
+                            dict_obj = eval(sus)
+                        except (NameError, SyntaxError):
+                            print("** invalid dictionary representation **")
+                            return
+                        if type(dict_obj) == dict:
+                            for key, value in dict_obj.items():
+                                setattr(instance, key, value)
+                                instance.save()
+                        else:
+                            print("** no instance found **")
+                    else:
+                        print("** invalid dictionary representation **")
+                else:
+                    print("** class doesn't exist **")
+            elif len(args) >= 3:
+                class_name = sections[0]
+                id_part = args[0]
+                if class_name in list(valid_models.keys()):
+                    live_instances = storage.all()
+                    key = class_name + "." + id_part
+                    if key in live_instances:
+                        instance = live_instances[key]
+                        attr_name = args[1]
                         attr_value = args[2]
                         setattr(instance, attr_name, attr_value)
                         instance.save()
@@ -103,37 +132,6 @@ class HBNBCommand(cmd.Cmd):
                     print("** class doesn't exist **")
             else:
                 print("** not enough arguments **")
-
-        elif (len(sections) == 2 and is_function(sections[1], 'update')
-              and num_of_args(sections[7:-1]) == 2):
-            args = [arg.strip() for arg in sections[1][7:-1].split(', ')]
-            if len(args) >= 2:
-                class_name = sections[0]
-                id_part = args[0][1:-1]
-                if class_name in valid_models:
-                    instances = storage.all()
-                    key = class_name + "." + id_part
-                    if key in instances:
-                        instance = instances[key]
-                        try:
-                            dict_repr = eval(args[1])
-                        except (NameError, SyntaxError):
-                            print("** invalid dictionary representation **")
-                            return
-                        if type(dict_repr) == dict:
-                            for attr, value in dict_repr.items():
-                                setattr(instance, attr, value)
-                            instance.save()
-                        else:
-                            print("** invalid dictionary representation **")
-                    else:
-                        print("** no instance found **")
-                else:
-                    print("** class doesn't exist **")
-            else:
-                print("** not enough arguments **")
-        else:
-            print("*** Unknown syntax: {}".format(line))
 
     def do_quit(self, arg):
         """Usage: quit
