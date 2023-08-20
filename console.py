@@ -4,6 +4,31 @@
 
 import cmd
 from models import storage, valid_models
+import re
+
+
+def is_function(suspect, name):
+    """checks if `suspect` is a partial of function
+
+    Args:
+        suspect : string - the string suspected to be part of a function
+        name : string - the name of the function
+    """
+    if suspect.startswith(f'{name}(') and suspect.endswith(')'):
+        return True
+    return False
+
+
+def num_of_args(arg_string) -> int:
+    """calculates the number of args in a string
+
+    Args:
+        arg_string - the function args string
+
+    Returns:
+        The number of args
+    """
+    return len(arg_string.split(", "))
 
 
 class HBNBCommand(cmd.Cmd):
@@ -28,8 +53,8 @@ class HBNBCommand(cmd.Cmd):
                 command = "{}".format(class_name)
                 self.do_count(command)
             else:
-                print("** class doesn't exis         t **")
-        elif sections[1].startswith('show(') and sections[1].endswith(')'):
+                print("** class doesn't exist **")
+        elif len(sections) == 2 and is_function(sections[1], 'show'):
             class_name = sections[0]
             id = str(sections[1][6:-2])
 
@@ -42,33 +67,60 @@ class HBNBCommand(cmd.Cmd):
                     print("** no instance found **")
             else:
                 print("** class doesn't exist **")
-        elif sections[1].startswith('destroy(') and sections[1].endswith(')'):
+        elif len(sections) == 2 and is_function(sections[1], 'destroy'):
             class_name = sections[0]
-            id = str(sections[1][5:-1]).strip()
+            id = sections[1][9:-2]
 
-            if class_name in valid_models.keys():
-                instances = storage.all()
+            if class_name in list(valid_models.keys()):
                 key = class_name + "." + id
-                if key in instances:
-                    instances.pop(key)
+                live_instances = storage.all()
+                if key in live_instances:
+                    live_instances.pop(key)
                     storage.save()
                 else:
                     print("** no instance found **")
             else:
                 print("** class doesn't exist **")
 
-        elif sections[1].startswith('update(') and sections[1].endswith(')'):
-            print('update function')
-            args = [arg.strip() for arg in sections[1][7:-1].split(', ')]
-            if len(args) >= 3:
-                class_name = sections[0]
-                id_part = args[0][1:-1]
-                if class_name in valid_models:
-                    instances = storage.all()
+        elif (len(sections) == 2 and
+              is_function(sections[1], 'update')):
+            args = [arg.strip().replace('"', '')
+                    for arg in sections[1][7:-1].split(', ')]
+            class_name = sections[0]
+            id_part = args[0]
+            id = sections[1][7:-1].split(', ')[0].strip()
+
+            pattern = r"\{.*\}"
+            match = re.search(pattern, sections[1])
+            if match:
+                sus = match.group(0)
+                if class_name in list(valid_models.keys()):
+                    live_instances = storage.all()
                     key = class_name + "." + id_part
-                    if key in instances:
-                        instance = instances[key]
-                        attr_name = args[1][1:-1]
+                    if key in live_instances:
+                        instance = live_instances[key]
+                        try:
+                            dict_obj = eval(sus)
+                        except (NameError, SyntaxError):
+                            print("** invalid dictionary representation **")
+                            return
+
+                        for key, value in dict_obj.items():
+                            setattr(instance, key, value)
+                            instance.save()
+                    else:
+                        print("** no instance found **")
+                else:
+                    print("** class doesn't exist **")
+            elif len(args) >= 3:
+                class_name = sections[0]
+                id_part = args[0]
+                if class_name in list(valid_models.keys()):
+                    live_instances = storage.all()
+                    key = class_name + "." + id_part
+                    if key in live_instances:
+                        instance = live_instances[key]
+                        attr_name = args[1]
                         attr_value = args[2]
                         setattr(instance, attr_name, attr_value)
                         instance.save()
@@ -78,36 +130,6 @@ class HBNBCommand(cmd.Cmd):
                     print("** class doesn't exist **")
             else:
                 print("** not enough arguments **")
-
-        elif sections[1].startswith('update(') and sections[1].endswith(')'):
-            args = [arg.strip() for arg in sections[1][7:-1].split(', ')]
-            if len(args) >= 2:
-                class_name = sections[0]
-                id_part = args[0][1:-1]
-                if class_name in valid_models:
-                    instances = storage.all()
-                    key = class_name + "." + id_part
-                    if key in instances:
-                        instance = instances[key]
-                        try:
-                            dict_repr = eval(args[1])
-                        except (NameError, SyntaxError):
-                            print("** invalid dictionary representation **")
-                            return
-                        if type(dict_repr) == dict:
-                            for attr, value in dict_repr.items():
-                                setattr(instance, attr, value)
-                            instance.save()
-                        else:
-                            print("** invalid dictionary representation **")
-                    else:
-                        print("** no instance found **")
-                else:
-                    print("** class doesn't exist **")
-            else:
-                print("** not enough arguments **")
-        else:
-            print("*** Unknown syntax: {}".format(line))
 
     def do_quit(self, arg):
         """Usage: quit
@@ -199,6 +221,31 @@ class HBNBCommand(cmd.Cmd):
             class_instances = [str(value) for key, value in instances.items()
                                if args[0] in key]
             print(class_instances)
+
+    def do_destroy(self, arg):
+        """Usage: destroy <class.id>
+
+        Delete an instance based on class name and id
+
+        Args:
+            arg {string} - unparsed string which is unique instance to be
+            deleted
+        """
+        args = arg.split()
+        if len(args) == 0:
+            print("** class name missing **")
+        elif args[0] not in list(valid_models.keys()):
+            print("** class doesn't exist **")
+        elif len(args) < 2:
+            print("** instance id missing **")
+        else:
+            key = args[0] + "." + args[1]
+            live_instances = storage.all()
+            if key in live_instances:
+                live_instances.pop(key)
+                storage.save()
+            else:
+                print("** no instance found **")
 
     def do_count(self, arg):
         """Usage: all

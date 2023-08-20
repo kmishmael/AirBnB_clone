@@ -14,22 +14,22 @@ class Place(BaseModel):
         user_id {string} - empty string
         name {string} - empty string
         description {string} - empty string
-        number_rooms {string} - empty string
-        number_bathrooms {string} - empty string
-        max_guest {string} - empty string
-        price_by_night {string} - empty string
-        latitude {string} - empty string
-        longitude {string} - empty string
-        amenity_ids {string} - empty string`1
+        number_rooms {integer} - 0
+        number_bathrooms {integer} - 0
+        max_guest {integer} - 0
+        price_by_night {integer} - 0
+        latitude {float} - 0.0
+        longitude {float} - 0.0
+        amenity_ids {string[]} - []
     """
     city_id = ""
     user_id = ""
     name = ""
     description = ""
-    number_rooms = ""
-    number_bathrooms = ""
-    max_guest = ""
-    price_by_night = ""
-    latitude = ""
-    longitude = ""
-    amenity_ids = ""
+    number_rooms = 0
+    number_bathrooms = 0
+    max_guest = 0
+    price_by_night = 0
+    latitude = 0.0
+    longitude = 0.0
+    amenity_ids = []
